@@ -6,6 +6,8 @@ def criarConexao(endereco, usuario, senha, bancodedados):
         return mysql.connector.connect(
             host=endereco,
             user=usuario,
+
+
             password=senha,
             database=bancodedados
         )
