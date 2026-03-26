@@ -2,6 +2,17 @@ from operacoesbd import *
 
 categorias = ["Elogio", "Sugestão", "Reclamação"]
 
+def print_cod_desc(reclamacoes):
+    for item in reclamacoes:
+        print(f" 🆔 ID: {item[0]} | 📄 DESCRIÇÃO: {item[2]}")
+
+
+def print_reclamacoes(reclamacoes):
+
+    for reclamacao in reclamacoes:
+        print(f"🔹 CÓDIGO:    {reclamacao[0]}")
+        print(f"🔸 CATEGORIA: {reclamacao[1]}")
+        print(f"📝 DESCRIÇÃO: {reclamacao[2]}")
 
 def listar_categorias_reclamacoes(categorias):
     print("\n--- CATEGORIAS DISPONÍVEIS ---")
@@ -23,12 +34,8 @@ def listar_reclamacoes(connection):
     if len(reclamacoes) == 0:
         print("\n>>> Não existe nenhum item registrado no sistema.\n")
     else:
-        for reclamacao in reclamacoes:
-            print(f"🔹 CÓDIGO:    {reclamacao[0]}")
-            print(f"🔸 CATEGORIA: {reclamacao[1]}")
-            print(f"📝 DESCRIÇÃO: {reclamacao[2]}")
-            print("-" * 50)
-
+        print_reclamacoes(reclamacoes)
+        print("-" * 50)
 
 def inserir_reclamacoes(connection):
     print("\n>>> INICIAR NOVO REGISTRO")
@@ -71,8 +78,7 @@ def pesquisar_reclamacoes(connection):
 
             if len(reclamacoes) > 0:
                 print(f"\n--- RESULTADOS PARA: {categoria_escolhida.upper()} ---")
-                for item in reclamacoes:
-                    print(f" 🆔 ID: {item[0]} | 📄 DESCRIÇÃO: {item[2]}")
+                print_cod_desc(reclamacoes)
                 print("-" * 40)
             else:
                 print(f"\n⚠️ Nenhum item encontrado na categoria: {categoria_escolhida}\n")
@@ -166,8 +172,7 @@ def listar_quantidade(connection):
 
                     if len(reclamacoes) > 0:
                         print(f"\n--- TOTAL NA CATEGORIA {categoria.upper()}: {len(reclamacoes)} ---")
-                        for item in reclamacoes:
-                            print(f"🔹 CÓDIGO: {item[0]} | 📝: {item[2]}")
+                        print_cod_desc(reclamacoes)
                     else:
                         print(f"\nNão há registros para {categoria}.")
                 else:
