@@ -18,9 +18,9 @@ while True:
     """)
     print("-" * 50)
 
-    entrada = int(input("Escolha uma das opções: "))
+    entrada = input("Escolha uma das opções: ")
 
-    if entrada.is_integer():
+    if entrada.isdigit():
 
         opcao = int(entrada)
 
@@ -45,5 +45,8 @@ while True:
 
         elif opcao == 6:
             listar_quantidade(connection)
+
+    else:
+        print("\n[ERRO] Digite apenas números entre 1 e 7!")
 
 encerrarConexao(connection)
