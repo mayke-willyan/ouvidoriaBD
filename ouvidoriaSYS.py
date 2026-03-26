@@ -31,86 +31,113 @@ def listar_reclamacoes(connection):
 
 
 def inserir_reclamacoes(connection):
-    commando_bd = 'INSERT INTO reclamacoes (categoria,descricao) values (%s,%s)'
-
     print("\n>>> INICIAR NOVO REGISTRO")
     listar_categorias_reclamacoes(categorias)
 
-    opcao_categoria = int(input("Selecione o número da categoria: "))
+    entrada = input("Selecione o número da categoria: ")
 
-    # Nota: Aqui pode dar erro se o usuário digitar um número fora do range (Ex: 5)
-    categoria_escolhida = categorias[opcao_categoria - 1]
+    if entrada.isdigit():
+        opcao_categoria = int(entrada)
 
-    if categoria_escolhida not in categorias:
-        print("\n[ERRO] Categoria escolhida não existe!")
+        # Validação do intervalo da lista
+        if 1 <= opcao_categoria <= len(categorias):
+            categoria_escolhida = categorias[opcao_categoria - 1]
+            descricao = input(f"Digite o relato do seu {categoria_escolhida}: ")
+
+            commando_bd = 'INSERT INTO reclamacoes (categoria,descricao) values (%s,%s)'
+            dados = (categoria_escolhida, descricao)
+            insertNoBancoDados(connection, commando_bd, dados)
+            print(f"\n✅ {categoria_escolhida} registrado com sucesso!\n")
+        else:
+            print("\n[ERRO] Esta categoria não existe!")
     else:
-        descricao = input(f"Digite o relato do seu {categoria_escolhida}: ")
-        dados = (categoria_escolhida, descricao)
-        insertNoBancoDados(connection, commando_bd, dados)
-        print(f"\n✅ {categoria_escolhida} registrado com sucesso!\n")
+        print("\n[ERRO] Digite apenas o número da opção!")
 
 
 def pesquisar_reclamacoes(connection):
     print("\n>>> PESQUISAR POR CATEGORIA")
     listar_categorias_reclamacoes(categorias)
 
-    opcao_categoria = int(input("Selecione a categoria para filtrar: "))
-    categoria_escolhida = categorias[opcao_categoria - 1]
+    entrada = input("Selecione a categoria para filtrar: ")
 
-    comando_bd = 'SELECT * from reclamacoes where categoria = %s'
-    dados = [categoria_escolhida]
+    if entrada.isdigit():
+        opcao_categoria = int(entrada)
 
-    reclamacoes = listarBancoDados(connection, comando_bd, dados)
+        if 1 <= opcao_categoria <= len(categorias):
+            categoria_escolhida = categorias[opcao_categoria - 1]
+            comando_bd = 'SELECT * from reclamacoes where categoria = %s'
+            dados = [categoria_escolhida]
+            reclamacoes = listarBancoDados(connection, comando_bd, dados)
 
-    if len(reclamacoes) > 0:
-        print(f"\n--- RESULTADOS PARA: {categoria_escolhida.upper()} ---")
-        for item in reclamacoes:
-            print(f" 🆔 ID: {item[0]} | 📄 DESCRIÇÃO: {item[2]}")
-        print("-" * 40)
+            if len(reclamacoes) > 0:
+                print(f"\n--- RESULTADOS PARA: {categoria_escolhida.upper()} ---")
+                for item in reclamacoes:
+                    print(f" 🆔 ID: {item[0]} | 📄 DESCRIÇÃO: {item[2]}")
+                print("-" * 40)
+            else:
+                print(f"\n⚠️ Nenhum item encontrado na categoria: {categoria_escolhida}\n")
+        else:
+            print("\n[ERRO] Categoria inválida!")
     else:
-        print(f"\n⚠️ Nenhum item encontrado na categoria: {categoria_escolhida}\n")
+        print("\n[ERRO] Entrada inválida! Digite o número da categoria.")
 
 
 def update_reclamacao(connection):
     listar_reclamacoes(connection)
-
     print("\n>>> ATUALIZAR REGISTRO")
-    codigo_reclamacao = int(input("Digite o ID do item que deseja modificar: "))
 
-    listar_categorias_reclamacoes(categorias)
-    print("**** Escolha a NOVA categoria ****")
-    opcao_categoria = int(input("Número: "))
+    id_entrada = input("Digite o ID do item que deseja modificar: ")
 
-    if opcao_categoria < 1 or opcao_categoria > len(categorias):
-        print("\n[ERRO] Categoria Inválida! Operação cancelada.")
-        return
+    if id_entrada.isdigit():
+        codigo_reclamacao = int(id_entrada)
 
-    comando_bd = "update reclamacoes set categoria = %s, descricao = %s where codigo = %s"
+        listar_categorias_reclamacoes(categorias)
+        cat_entrada = input("Escolha a NOVA categoria (número): ")
 
-    nova_categoria = categorias[opcao_categoria - 1]
-    nova_descricao = input("Digite a nova descrição detalhada: ")
+        if cat_entrada.isdigit():
+            opcao_categoria = int(cat_entrada)
 
-    dados = [nova_categoria, nova_descricao, codigo_reclamacao]
-    atualizarBancoDados(connection, comando_bd, dados)
+            if 1 <= opcao_categoria <= len(categorias):
+                nova_categoria = categorias[opcao_categoria - 1]
+                nova_descricao = input("Digite a nova descrição detalhada: ")
 
-    print(f"\n✅ {nova_categoria} atualizado com sucesso!\n")
+                comando_bd = "update reclamacoes set categoria = %s, descricao = %s where codigo = %s"
+                dados = [nova_categoria, nova_descricao, codigo_reclamacao]
+                atualizarBancoDados(connection, comando_bd, dados)
+                print(f"\n✅ Registro {codigo_reclamacao} atualizado com sucesso!\n")
+            else:
+                print("\n[ERRO] Categoria inválida!")
+        else:
+            print("\n[ERRO] Digite um número para a categoria!")
+    else:
+        print("\n[ERRO] O ID deve ser um número!")
 
 
 def remover_reclamacao(connection):
     listar_reclamacoes(connection)
-
     print("\n>>> REMOVER REGISTRO")
-    codigo_reclamacao = int(input("Digite o ID do item que deseja EXCLUIR: "))
 
-    codigo_bd = "delete from reclamacoes where codigo = %s"
-    dados = [codigo_reclamacao]
+    entrada = input("Digite o ID do item que deseja EXCLUIR: ")
 
-    linhas_afetadas = excluirBancoDados(connection, codigo_bd, dados)
+    if entrada.isdigit():
+        codigo_reclamacao = int(entrada)
 
-    if linhas_afetadas == 0:
-        print(f"\n[!] Não existem itens com o código {codigo_reclamacao}.\n")
+        # Adicionei uma pequena confirmação aqui, opcional mas segura
+        confirmar = input(f"Tem certeza que deseja apagar o ID {codigo_reclamacao}? (S/N): ").upper()
+
+        if confirmar == 'S':
+            codigo_bd = "delete from reclamacoes where codigo = %s"
+            dados = [codigo_reclamacao]
+            linhas_afetadas = excluirBancoDados(connection, codigo_bd, dados)
+
+            if linhas_afetadas == 0:
+                print(f"\n[!] Não existem itens com o código {codigo_reclamacao}.\n")
+            else:
+                print("\n🗑️ Item removido do sistema com sucesso!\n")
+        else:
+            print("\nOperação de remoção cancelada.\n")
     else:
-        print("\n🗑️ Item removido do sistema com sucesso!\n")
+        print("\n[ERRO] Digite um código de ID válido (número)!\n")
 
 
 def listar_quantidade(connection):
@@ -119,32 +146,35 @@ def listar_quantidade(connection):
     print("2) Listar por categoria específica")
     print("-" * 30)
 
-    opcao = int(input("Escolha: "))
+    entrada = input("Escolha: ")
 
-    # Nota: A condição '0 < opcao > 2' no seu original está um pouco confusa.
-    if opcao < 1 or opcao > 2:
-        print("\n[!] Opção não existe no menu de quantidade.")
-        return
+    if entrada.isdigit():
+        opcao = int(entrada)
 
-    elif opcao == 1:
-        listar_reclamacoes(connection)
+        if opcao == 1:
+            listar_reclamacoes(connection)
+        elif opcao == 2:
+            listar_categorias_reclamacoes(categorias)
+            cat_entrada = input("Escolha a categoria (número): ")
 
-    elif opcao == 2:
-        listar_categorias_reclamacoes(categorias)
-        opcao_categoria = int(input("Escolha a categoria: "))
+            if cat_entrada.isdigit():
+                opcao_categoria = int(cat_entrada)
+                if 1 <= opcao_categoria <= len(categorias):
+                    categoria = categorias[opcao_categoria - 1]
+                    codigo_bd = "select * from reclamacoes where categoria = %s"
+                    reclamacoes = listarBancoDados(connection, codigo_bd, [categoria])
 
-        if opcao_categoria < 1 or opcao_categoria > len(categorias):
-            print("\n[ERRO] Categoria Inválida!")
-            return
-
-        codigo_bd = "select * from reclamacoes where categoria = %s"
-        categoria = categorias[opcao_categoria - 1]
-
-        # Nota: faltava chamar a função de listar aqui
-        reclamacoes = listarBancoDados(connection, codigo_bd, [categoria])
-
-        for item in reclamacoes:
-            print(f"🔹 CÓDIGO:    {item[0]}")
-            print(f"🔸 CATEGORIA: {item[1]}")
-            print(f"📝 DESCRIÇÃO: {item[2]}")
-            print("-" * 50)
+                    if len(reclamacoes) > 0:
+                        print(f"\n--- TOTAL NA CATEGORIA {categoria.upper()}: {len(reclamacoes)} ---")
+                        for item in reclamacoes:
+                            print(f"🔹 CÓDIGO: {item[0]} | 📝: {item[2]}")
+                    else:
+                        print(f"\nNão há registros para {categoria}.")
+                else:
+                    print("\n[ERRO] Categoria Inválida!")
+            else:
+                print("\n[ERRO] Digite um número!")
+        else:
+            print("\n[ERRO] Opção de menu inválida.")
+    else:
+        print("\n[ERRO] Digite apenas números!")

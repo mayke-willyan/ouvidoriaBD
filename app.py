@@ -18,28 +18,32 @@ while True:
     """)
     print("-" * 50)
 
-    opcao = int(input("Escolha uma das opções: "))
+    entrada = int(input("Escolha uma das opções: "))
 
-    if opcao == 7:
-        print("\nEncerrando o sistema... Até logo!")
-        break
+    if entrada.is_integer():
 
-    elif opcao == 1:
-        listar_reclamacoes(connection)
+        opcao = int(entrada)
 
-    elif opcao == 2:
-        inserir_reclamacoes(connection)
+        if opcao == 7:
+            print("\nEncerrando o sistema... Até logo!")
+            break
 
-    elif opcao == 3:
-        pesquisar_reclamacoes(connection)
+        elif opcao == 1:
+            listar_reclamacoes(connection)
 
-    elif opcao == 4:
-        update_reclamacao(connection)
+        elif opcao == 2:
+            inserir_reclamacoes(connection)
 
-    elif opcao == 5:
-        remover_reclamacao(connection)
+        elif opcao == 3:
+            pesquisar_reclamacoes(connection)
 
-    elif opcao == 6:
-        listar_quantidade(connection)
+        elif opcao == 4:
+            update_reclamacao(connection)
+
+        elif opcao == 5:
+            remover_reclamacao(connection)
+
+        elif opcao == 6:
+            listar_quantidade(connection)
 
 encerrarConexao(connection)
