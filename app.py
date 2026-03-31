@@ -1,7 +1,10 @@
 from ouvidoriaSYS import *
 
-# Sugestão: Verifique se o nome do banco 'ouvidoriap2' está correto no seu MySQL
-connection = criarConexao("localhost","root","Mayke@A1223145","ouvidoriap2")
+user = input("Digite o usuario: ")
+senha = input("Digite a senha: ")
+banco = input("Digite o banco: ")
+
+connection = criarConexao("localhost",user,senha,banco)
 
 while True:
     print("\n" + "="*50)
